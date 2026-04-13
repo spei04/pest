@@ -74,20 +74,19 @@ Application startup complete.
 
 The source documents are not in the git repo — upload them directly to the server.
 
-### Find your SSH credentials
+### Find your SSH host
 
-In your Render service dashboard, go to **Shell** and copy the SSH connection string. It looks like:
-
-```
-ssh srv-xxxxxxxxxxxx@ssh.oregon.render.com
-```
+In your Render service dashboard, go to **Shell** — it shows the full SSH connection string with your region. Common hosts:
+- `ssh.oregon.render.com` (US West)
+- `ssh.ohio.render.com` (US East)
+- `ssh.frankfurt.render.com` (EU)
 
 ### Upload via SCP
 
-Run this from your Mac terminal (replace the host with your actual Render SSH host):
+Run this from your Mac terminal (replace the host with the one shown in your Render Shell tab):
 
 ```bash
-scp -r "/Users/serenapei/Downloads/pest/sources" srv-xxxxxxxxxxxx@ssh.oregon.render.com:/data/
+scp -r "/Users/serenapei/Downloads/pest/sources" srv-d7eh6mfavr4c73b9ggbg@ssh.oregon.render.com:/data/
 ```
 
 This copies your entire `sources/` folder to `/data/sources` on the server.
