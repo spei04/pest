@@ -1,0 +1,11 @@
+anthropic
+sentence-transformers
+chromadb
+python-docx
+python-pptx
+pdfplumber
+openai-whisper
+ffmpeg-python
+python-dotenv
+fastapi
+uvicorn

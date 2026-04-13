@@ -1,0 +1,8 @@
+.env
+chroma_db/
+__pycache__/
+*.pyc
+myenv/
+.DS_Store
+# Source documents are uploaded directly to Render via SCP — not stored in git
+sources/
