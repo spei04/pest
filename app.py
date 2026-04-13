@@ -7,12 +7,14 @@ Run with:
 Then open http://localhost:8000 in your browser.
 """
 
+import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 import chromadb
 from anthropic import Anthropic
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Header, HTTPException, UploadFile, Form
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer
@@ -82,6 +84,32 @@ async def chat(req: ChatRequest):
         answer=answer,
         citations=[Citation(source=c["source"], snippet=c["snippet"]) for c in citations],
     )
+
+
+# ---------------------------------------------------------------------------
+# Source document upload (protected by UPLOAD_TOKEN env var)
+# Disable by removing the UPLOAD_TOKEN env var after initial ingest.
+# ---------------------------------------------------------------------------
+
+@app.post("/upload")
+async def upload_source(
+    file: UploadFile,
+    subpath: str = Form(...),
+    authorization: str = Header(None),
+):
+    token = os.environ.get("UPLOAD_TOKEN", "")
+    if not token or authorization != f"Bearer {token}":
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    # Prevent path traversal
+    safe = Path(subpath)
+    if safe.is_absolute() or ".." in safe.parts:
+        raise HTTPException(status_code=400, detail="Invalid path")
+
+    dest = Path(os.environ.get("SOURCES_DIR", "sources")) / safe
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(await file.read())
+    return {"saved": str(dest)}
 
 
 # ---------------------------------------------------------------------------

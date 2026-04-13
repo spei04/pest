@@ -45,13 +45,14 @@ The vector database must survive deploys and restarts.
 
 ## 3. Set Environment Variables
 
-Under **Environment**, add these three variables:
+Under **Environment**, add these four variables:
 
 | Key | Value |
 |---|---|
 | `ANTHROPIC_API_KEY` | your Anthropic API key |
 | `CHROMA_DIR` | `/data/chroma_db` |
 | `SOURCES_DIR` | `/data/sources` |
+| `UPLOAD_TOKEN` | any strong random string (e.g. `openssl rand -hex 32`) |
 
 ---
 
@@ -72,24 +73,21 @@ Application startup complete.
 
 ## 5. Upload Source Documents
 
-The source documents are not in the git repo — upload them directly to the server.
+Render's SSH is interactive-only and does not support SCP. Instead, upload via the `/upload` endpoint built into the app.
 
-### Find your SSH host
-
-In your Render service dashboard, go to **Shell** — it shows the full SSH connection string with your region. Common hosts:
-- `ssh.oregon.render.com` (US West)
-- `ssh.ohio.render.com` (US East)
-- `ssh.frankfurt.render.com` (EU)
-
-### Upload via SCP
-
-Run this from your Mac terminal (replace the host with the one shown in your Render Shell tab):
+First, generate a strong token and add it as the `UPLOAD_TOKEN` environment variable in Render:
 
 ```bash
-scp -r "/Users/serenapei/Downloads/pest/sources" srv-d7eh6mfavr4c73b9ggbg@ssh.oregon.render.com:/data/
+openssl rand -hex 32
 ```
 
-This copies your entire `sources/` folder to `/data/sources` on the server.
+Then from your Mac terminal:
+
+```bash
+UPLOAD_TOKEN=your-token ./upload_sources.sh
+```
+
+This uploads every file in `sources/` directly to `/data/sources` on the server.
 
 ---
 
@@ -128,7 +126,11 @@ The disk persists across deploys. You do not need to re-run `ingest.py` unless y
 
 ## Re-ingesting After Document Changes
 
-1. Upload any new or updated files to `/data/sources` via SCP
+1. Run `UPLOAD_TOKEN=your-token ./upload_sources.sh` to upload new or updated files
 2. Open the Render Shell and run `python ingest.py`
 
 Re-running is safe — existing documents are updated, not duplicated.
+
+## Disabling the Upload Endpoint
+
+Once your documents are ingested, remove the `UPLOAD_TOKEN` environment variable from Render to disable the `/upload` endpoint.
