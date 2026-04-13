@@ -26,7 +26,7 @@ hf_logging.set_verbosity_error()
 
 load_dotenv()
 
-SOURCES_DIR = Path("sources")
+SOURCES_DIR = Path(os.environ.get("SOURCES_DIR", "sources"))
 CHROMA_DIR = os.environ.get("CHROMA_DIR", "./chroma_db")
 COLLECTION_NAME = "pest_docs"
 EMBED_MODEL = "all-MiniLM-L6-v2"  # free, local, no API key needed
