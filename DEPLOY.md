@@ -84,7 +84,7 @@ openssl rand -hex 32
 Then from your Mac terminal:
 
 ```bash
-UPLOAD_TOKEN=your-token ./upload_sources.sh
+UPLOAD_TOKEN=your-token python upload_sources.py
 ```
 
 This uploads every file in `sources/` directly to `/data/sources` on the server.
@@ -126,7 +126,7 @@ The disk persists across deploys. You do not need to re-run `ingest.py` unless y
 
 ## Re-ingesting After Document Changes
 
-1. Run `UPLOAD_TOKEN=your-token ./upload_sources.sh` to upload new or updated files
+1. Run `UPLOAD_TOKEN=your-token python upload_sources.py` to upload new or updated files
 2. Open the Render Shell and run `python ingest.py`
 
 Re-running is safe — existing documents are updated, not duplicated.
